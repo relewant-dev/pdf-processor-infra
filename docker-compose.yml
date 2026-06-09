@@ -3,10 +3,10 @@ services:
     image: ghcr.io/relewant-dev/smart-ide-services:latest
     container_name: smart-ide-backend
     env_file:
-      - .env
+      - ./backend/.env
     environment:
       OLLAMA_URL: ${OLLAMA_URL:-http://host.docker.internal:11434}
-      OLLAMA_MODEL: ${OLLAMA_MODEL:-qwen3-vl:4b}
+      OLLAMA_MODEL: ${OLLAMA_MODEL:-llama3.1:8b}
       QDRANT_URL: http://qdrant:6333
       LOG_LEVEL: ${LOG_LEVEL:-INFO}
     extra_hosts:
@@ -24,5 +24,5 @@ services:
       - "6333:6333"
       - "6334:6334"
     volumes:
-      - ${QDRANT_STORAGE_PATH:-./qdrant_storage}:/qdrant/storage
+      - /home/alessandro/Desktop/data/qdrant:/qdrant/storage
     restart: unless-stopped
