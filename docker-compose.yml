@@ -6,14 +6,18 @@ services:
       - ./backend/.env
     environment:
       OLLAMA_URL: http://ollama:11434
-      OLLAMA_MODEL: ${OLLAMA_MODEL:-llama3.1:8b}
+      OLLAMA_MODEL: llama3.1:8b
       QDRANT_URL: http://qdrant:6333
-      LOG_LEVEL: ${LOG_LEVEL:-INFO}
+      LOG_LEVEL: INFO
     depends_on:
-      - qdrant
-      - ollama
+      ollama:
+        condition: service_healthy
+      qdrant:
+        condition: service_started
     ports:
       - "8000:8000"
+    networks:
+      - pdf-network
     restart: unless-stopped
 
   qdrant:
@@ -24,6 +28,8 @@ services:
       - "6334:6334"
     volumes:
       - /home/administrator/data/qdrant/storage:/qdrant/storage
+    networks:
+      - pdf-network
     restart: unless-stopped
 
   ollama:
@@ -33,4 +39,15 @@ services:
       - "11434:11434"
     volumes:
       - /home/administrator/data/ollama:/root/.ollama
+    healthcheck:
+      test: ["CMD", "ollama", "list"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+    networks:
+      - pdf-network
     restart: unless-stopped
+
+networks:
+  pdf-network:
+    driver: bridge
