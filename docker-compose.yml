@@ -5,14 +5,13 @@ services:
     env_file:
       - ./backend/.env
     environment:
-      OLLAMA_URL: ${OLLAMA_URL:-http://host.docker.internal:11434}
+      OLLAMA_URL: http://ollama:11434
       OLLAMA_MODEL: ${OLLAMA_MODEL:-llama3.1:8b}
       QDRANT_URL: http://qdrant:6333
       LOG_LEVEL: ${LOG_LEVEL:-INFO}
-    extra_hosts:
-      - "host.docker.internal:host-gateway"
     depends_on:
       - qdrant
+      - ollama
     ports:
       - "8000:8000"
     restart: unless-stopped
@@ -24,5 +23,14 @@ services:
       - "6333:6333"
       - "6334:6334"
     volumes:
-      - /home/alessandro/Desktop/data/qdrant:/qdrant/storage
+      - /home/administrator/data/qdrant/storage:/qdrant/storage
+    restart: unless-stopped
+
+  ollama:
+    image: ollama/ollama:latest
+    container_name: ollama
+    ports:
+      - "11434:11434"
+    volumes:
+      - /home/administrator/data/ollama:/root/.ollama
     restart: unless-stopped
