@@ -1,7 +1,7 @@
 services:
   backend:
-    image: ghcr.io/relewant-dev/smart-ide-services:latest
-    container_name: smart-ide-backend
+    image: ghcr.io/relewant-dev/pdf-processor-services:latest
+    container_name: pdf-processor-services
     env_file:
       - ./backend/.env
     environment:
