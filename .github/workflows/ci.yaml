@@ -37,7 +37,7 @@ jobs:
         run: |
           ping -c 3 192.168.100.206
 
-      - name: Deploy on Proxmox
+      - name: Deploy on Remote Server
         run: |
           sshpass -p "${{ secrets.RW_AI_DEV_SERVER_PASSWORD }}" ssh -o StrictHostKeyChecking=no administrator@192.168.100.206 << 'EOF'
             cd /home/administrator/pdf-processor-infra
@@ -46,7 +46,8 @@ jobs:
             git fetch origin main
             git checkout main
             git pull origin main
-
+            
+            docker compose down
             docker compose pull
             docker compose up -d
 
