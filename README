@@ -1,0 +1,40 @@
+## Configurazione volumi
+
+I path host dei volumi sono configurabili via variabili d'ambiente in `docker-compose.yml`:
+
+- `QDRANT_STORAGE_DIR` per il volume di Qdrant
+- `OLLAMA_DATA_DIR` per il volume di Ollama
+- `OLLAMA_CA_CERTS_DIR` per eventuali CA custom usate da `ollama-pull`
+
+Se non impostate, vengono usati i fallback:
+
+- `/home/administrator/data/qdrant/storage`
+- `/home/administrator/data/ollama`
+- `./certs/ollama`
+
+Esempio:
+
+```bash
+export QDRANT_STORAGE_DIR=/opt/pdf-processor/qdrant
+export OLLAMA_DATA_DIR=/opt/pdf-processor/ollama
+export OLLAMA_CA_CERTS_DIR=/opt/pdf-processor/certs/ollama
+docker compose up -d
+```
+
+Al primo avvio il compose esegue anche il pull del modello configurato in `OLLAMA_MODEL`
+(`llama3.1:8b` di default), così il backend non parte prima che Ollama abbia il modello
+disponibile.
+
+Se il pull fallisce con `x509: certificate signed by unknown authority`, monta in
+`OLLAMA_CA_CERTS_DIR` uno o più file `.crt`/`.pem` con la CA della tua rete o proxy.
+Il container di `ollama-pull` li unisce al trust store standard e riprova il pull.
+
+## Script di configurazione
+
+Per generare o aggiornare automaticamente `.env` puoi usare:
+
+```bash
+bash scripts/setup-docker-volumes.sh /opt/pdf-processor/qdrant /opt/pdf-processor/ollama
+```
+
+Se ometti gli argomenti, lo script usa i valori di default definiti nel repository.
