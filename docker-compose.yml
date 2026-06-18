@@ -1,4 +1,20 @@
 services:
+  frontend:
+    image: ghcr.io/relewant-dev/pdf-processor-app:latest
+    container_name: pdf-processor-app
+    environment:
+      BACKEND_URL: http://backend:8000
+      NEXT_PUBLIC_API_URL: http://localhost:8000
+      NODE_ENV: production
+      PORT: 3000
+    depends_on:
+      - backend
+    ports:
+      - "3000:3000"
+    networks:
+      - pdf-network
+    restart: unless-stopped
+
   backend:
     image: ghcr.io/relewant-dev/pdf-processor-services:latest
     container_name: pdf-processor-services
@@ -76,15 +92,6 @@ services:
       GGML_CPU_AARCH64: "0"
     entrypoint: ["/bin/sh", "-lc"]
     command: |
-      custom_bundle=/tmp/custom-ca-bundle.crt
-      if find /custom-ca -type f \( -name '*.crt' -o -name '*.pem' \) | grep -q .; then
-        if [ -f /etc/ssl/certs/ca-certificates.crt ]; then
-          cat /etc/ssl/certs/ca-certificates.crt $(find /custom-ca -type f \( -name '*.crt' -o -name '*.pem' \) | sort) > "$${custom_bundle}"
-        else
-          cat $(find /custom-ca -type f \( -name '*.crt' -o -name '*.pem' \) | sort) > "$${custom_bundle}"
-        fi
-        export SSL_CERT_FILE="$${custom_bundle}"
-      fi
       exec ollama pull "$${OLLAMA_MODEL}"
     volumes:
       - ${OLLAMA_DATA_DIR:-/home/administrator/data/ollama}:/root/.ollama
