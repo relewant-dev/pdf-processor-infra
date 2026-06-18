@@ -54,6 +54,9 @@ services:
     image: ollama/ollama:0.24.0
     container_name: ollama
     command: serve
+    dns:
+      - 8.8.8.8
+      - 1.1.1.1
     ports:
       - "11434:11434"
     volumes:
@@ -79,6 +82,9 @@ services:
   ollama-pull:
     image: ollama/ollama:0.24.0
     container_name: ollama-model-pull
+    dns:
+      - 8.8.8.8
+      - 1.1.1.1
     depends_on:
       ollama:
         condition: service_healthy
