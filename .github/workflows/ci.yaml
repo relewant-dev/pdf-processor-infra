@@ -3,7 +3,7 @@ name: Deploy Infrastructure
 on:
   workflow_dispatch:
   repository_dispatch:
-    types: [backend-deployed]
+    types: [backend-deployed, frontend-deployed]
 
 jobs:
   deploy:
